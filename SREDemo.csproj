@@ -46,11 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\Matrix4.cs" />
-    <Compile Include="Base\Vector3.cs" />
-    <Compile Include="RenderCore.cs" />
-    <Compile Include="Render\Mesh.cs" />
-    <Compile Include="Render\Vertex.cs" />
     <Compile Include="SRWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,8 +79,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
