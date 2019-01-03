@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Timers;
 using System.Windows.Forms;
 
@@ -15,6 +16,7 @@ namespace SREDemo
 
             canvas = this.CreateGraphics();
             buffer = new Bitmap(this.Width, this.Height);
+            RenderCore.FrameBuffer = buffer;
 
             RenderTimer();
         }
@@ -35,9 +37,24 @@ namespace SREDemo
         {
             lock (buffer)
             {
-                ClearBuffer(Color.Red);
+                ClearBuffer(Color.Black);
+                RenderingData();
                 canvas.DrawImage(buffer, 0, 0);
             }
+        }
+
+        private void RenderingData()
+        {
+            ////水平线
+            //RenderCore.DrawSpecialLine(100, 100, 200, 100);
+            //////垂直线
+            //RenderCore.DrawSpecialLine(100, 100, 100, 200);
+            ////45度斜线
+            //RenderCore.DrawSpecialLine(100, 100, 200, 200);
+            ////非45度斜线
+            //RenderCore.DrawSpecialLine(100, 100, 200, 150);
+            //RenderCore.DrawSpecialLine(100, 100, 200, 110);
+            //RenderCore.DrawSpecialLine(100, 100, 200, 180);
         }
 
         /// <summary>
