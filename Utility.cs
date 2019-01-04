@@ -21,5 +21,46 @@ namespace SREDemo
 
             return;
         }
+
+        /// <summary>
+        /// 限制值在某一个范围内
+        /// </summary>
+        /// <returns></returns>
+        public static float ClampValue(float value, float min, float max)
+        {
+            if (value <= min)
+                return min;
+            else if (value >= max)
+                return max;
+            else
+                return value;
+        }
+
+        /// <summary>
+        /// 按比例差值
+        /// </summary>
+        public static float Lerp(float min, float max, float factor)
+        {
+            if (factor <= 0)
+                return min;
+            else if (factor >= 1)
+                return max;
+            else
+                return min + (max - min) * factor;
+        }
+
+        //float四舍五入到int
+        public static int RoundToInt(float f)
+        {
+
+            int x = (int)f;
+            float frac = f - x;
+
+            if (frac > 0.5f)
+                return x + 1;
+
+            return x;
+
+        }
     }
 }
