@@ -10,7 +10,10 @@ __1.通过矩阵建立起坐标系变换流程,实现平顶、平底，任意三
 ![Triangle1](https://github.com/SixGodZhang/SREDemo/blob/master/Images/Triangle1.png) 
 
 __2.颜色插值__  
-![ColorLearp](https://github.com/SixGodZhang/SREDemo/blob/master/Images/ColorLearp.png) 
+![ColorLearp](https://github.com/SixGodZhang/SREDemo/blob/master/Images/ColorLearp.png)
+
+__3.线框模式__
+![wireframe](https://github.com/SixGodZhang/SREDemo/blob/master/Images/wireframe.png)
 
 ## 2019.1.3
 __1.使用C#中Window应用窗口的Graphics来模拟C/C++的窗口部分__  

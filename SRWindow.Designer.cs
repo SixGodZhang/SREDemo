@@ -1,4 +1,6 @@
-﻿namespace SREDemo
+﻿using System.Windows.Forms;
+
+namespace SREDemo
 {
     partial class SRWindow
     {
@@ -35,11 +37,16 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.KeyPreview = true;
             this.Name = "SRWindow";
             this.Text = "软件渲染引擎";
             this.ResumeLayout(false);
 
+            this.KeyDown += new KeyEventHandler(OnKeyDown);
+
         }
+
+
 
         #endregion
     }

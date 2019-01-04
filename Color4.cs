@@ -89,6 +89,15 @@ namespace SREDemo
         }
         #endregion
 
+        #region 预定义颜色
+        public static List<Color> colorPool = new List<Color>
+        {
+            Color.AliceBlue,Color.AntiqueWhite,Color.Black,Color.Brown,
+            Color.Coral,Color.DarkBlue,Color.DarkOrange,Color.DimGray,
+            Color.Red,Color.Green,Color.Blue,Color.White
+        };
+        #endregion
+
         #region 公开接口
         public override string ToString()
         {
@@ -108,6 +117,17 @@ namespace SREDemo
             c.A = 1;
 
             return c;
+        }
+
+        /// <summary>
+        /// 随机一个颜色值
+        /// </summary>
+        /// <returns></returns>
+        public static Color RandomColor()
+        {
+            Random random = new Random();
+            int index = random.Next() % colorPool.Count;
+            return colorPool[index];
         }
 
         /// <summary>

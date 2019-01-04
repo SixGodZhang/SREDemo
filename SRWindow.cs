@@ -10,14 +10,23 @@ namespace SREDemo
         private Graphics canvas;
         private Bitmap buffer;
         private Camera camera;
+        private float[,] zBuffer;
 
         public SRWindow()
         {
             InitializeComponent();
-
             canvas = this.CreateGraphics();
             buffer = new Bitmap(this.Width, this.Height);
             RenderCore.FrameBuffer = buffer;
+
+            //普通模式
+            RenderCore.RenderType = RenderType.Normal;
+            //线框模式
+            //RenderCore.RenderType = RenderType.WireFrame;
+
+            zBuffer = new float[this.Width, this.Height];
+            RenderCore.ZBuffer = zBuffer;
+
 
             //创建摄像机, 摄像机位置默认为(0,0,0),朝向z轴方向(0,0,1),以(0,1,0)为单位up向量,y方向的视角为90度,zn = 1, zf = 500
             float aspect = (float)this.Width / (float)this.Height;
@@ -25,13 +34,13 @@ namespace SREDemo
                                  3.1415926f / 4, aspect,
                                  1.0f, 500.0f);
 
-            RenderTimer();
+            RenderLoop();
         }
 
         /// <summary>
-        /// 渲染定时器
+        /// 渲染循环
         /// </summary>
-        public void RenderTimer()
+        public void RenderLoop()
         {
             System.Timers.Timer timer = new System.Timers.Timer(1000 / 60);
             timer.Elapsed += new ElapsedEventHandler(OnUpdate);
@@ -44,18 +53,73 @@ namespace SREDemo
         {
             lock (buffer)
             {
-                ProcessInput();
+                UpdateTranformationMatrix();
                 ClearBuffer(Color.Black);
                 RenderingData();
                 canvas.DrawImage(buffer, 0, 0);
             }
         }
 
-        //根据键盘的输入调整摄像机等,确定各个变换矩阵
-        public void ProcessInput()
+        /// <summary>
+        /// 键盘的输入调整摄像机 
+        /// 此功能卡顿: 
+        /// 1.未实现前后缓冲
+        /// 2.基于CPU实现的软件渲染流程，一条流水线走到底
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            Matrix4 scale = Matrix4.ScaleMatrix(2, 2, 2);
-            Matrix4 rotation = Matrix4.RotateMatrix(new Vector3(0, 1, 0, 0), 0f);
+
+            if (e.KeyCode == Keys.W)
+            {
+                camera.pos += Vector3.Front;
+            }
+
+            if (e.KeyCode == Keys.S)
+            {
+                camera.pos += Vector3.Back;
+            }
+
+            if (e.KeyCode == Keys.Q)
+            {
+                RenderCore.RenderType = (RenderType)(((int)RenderCore.RenderType + 1) >= Enum.GetNames(typeof(RenderType)).Length ? 0 : RenderCore.RenderType + 1);
+
+            }
+
+
+            //if (e.KeyCode == Keys.A)
+            //{
+            //    camera.pos += Vector3.Left;
+            //}
+
+            //if (e.KeyCode == Keys.D)
+            //{
+            //    camera.pos += Vector3.Right;
+            //}
+
+            //if (e.KeyCode == Keys.Q)
+            //{
+            //    MessageBox.Show("向左旋转");
+            //}
+
+            //if (e.KeyCode == Keys.E)
+            //{
+            //    MessageBox.Show("向右旋转");
+            //}
+        }
+
+        //确定各个变换矩阵
+        public void UpdateTranformationMatrix()
+        {
+            //三角形测试矩阵
+            //Matrix4 scale = Matrix4.ScaleMatrix(1, 1, 1);
+            //Matrix4 rotation = Matrix4.RotateMatrix(new Vector3(0, 1, 0, 0), 0);
+            //Matrix4 translate = Matrix4.TranslateMatrix(0, 0, 10);
+
+            //Cube测试矩阵
+            Matrix4 scale = Matrix4.ScaleMatrix(1, 1, 1);
+            Matrix4 rotation = Matrix4.RotateMatrix(new Vector3(-2, -2, -2, 0), 3.1415926f / 6.0f);
             Matrix4 translate = Matrix4.TranslateMatrix(0, 0, 10);
 
             //1.设定world矩阵
@@ -101,10 +165,21 @@ namespace SREDemo
             //RenderCore.DrawTriangle(p7, p8, p9);
 
             //颜色插值
-            Vertex p10 = new Vertex(new Vector3(0, 1, 1), Color.Red);
-            Vertex p11 = new Vertex(new Vector3(1, -1, 1), Color.Green);
-            Vertex p12 = new Vertex(new Vector3(-1, -1, 1), Color.Blue);
-            RenderCore.DrawTriangle(p10, p11, p12);
+            //Vertex p10 = new Vertex(new Vector3(0, 1, 1), Color.Red);
+            //Vertex p11 = new Vertex(new Vector3(1, -1, 1), Color.Green);
+            //Vertex p12 = new Vertex(new Vector3(-1, -1, 1), Color.Blue);
+            //RenderCore.DrawTriangle(p10, p11, p12);
+
+            //Cube
+            int triangles = Cube.indices.GetLength(0);
+
+            for (int i = 0; i < triangles; i++)
+            {
+                Vertex p13 = new Vertex(Cube.positions[Cube.indices[i, 0]]);
+                Vertex p14 = new Vertex(Cube.positions[Cube.indices[i, 1]]);
+                Vertex p15 = new Vertex(Cube.positions[Cube.indices[i, 2]]);
+                RenderCore.DrawTriangle(p13, p14, p15);
+            }
         }
 
         /// <summary>

@@ -12,6 +12,20 @@ namespace SREDemo
             set { _frameBuffer = value; }
         }
 
+        private static RenderType _renderType;
+        public static RenderType RenderType
+        {
+            get { return _renderType; }
+            set { _renderType = value; }
+        }
+
+        private static float[,] _zBuffer;
+        public static float[,] ZBuffer
+        {
+            get { return _zBuffer; }
+            set { _zBuffer = value; }
+        }
+
         public static void DrawTriangle(Vertex p1, Vertex p2, Vertex p3)
         {
             //1.局部=>世界
@@ -35,7 +49,23 @@ namespace SREDemo
             Transform.Homogeneous2Viewport(ref p3, _frameBuffer.Width, _frameBuffer.Height);
 
             //5.光栅化
-            RasterizationTriangle(p1, p2, p3);
+            switch (_renderType)
+            {
+                case RenderType.Normal:
+                    RasterizationTriangle(p1, p2, p3);
+                    break;
+                case RenderType.WireFrame:
+                    DrawSpecialLine(Utility.RoundToInt(p1.position.x),Utility.RoundToInt(p1.position.y),
+                                    Utility.RoundToInt(p2.position.x),Utility.RoundToInt(p2.position.y));
+
+                    DrawSpecialLine(Utility.RoundToInt(p2.position.x), Utility.RoundToInt(p2.position.y),
+                                    Utility.RoundToInt(p3.position.x), Utility.RoundToInt(p3.position.y));
+
+                    DrawSpecialLine(Utility.RoundToInt(p1.position.x), Utility.RoundToInt(p1.position.y),
+                                    Utility.RoundToInt(p3.position.x), Utility.RoundToInt(p3.position.y));
+                    break;
+            }
+            
         }
 
         /// <summary>
@@ -135,7 +165,6 @@ namespace SREDemo
                 int yindex = Utility.RoundToInt(y);
 
                 ScanlineFill(left, right, yindex);
-
             }
 
             //画bottom点
@@ -164,11 +193,17 @@ namespace SREDemo
 
                 Vertex v = Vertex.Lerp(left, right, factor);
 
-                //顶点颜色
-                Color4 vertexColor = v.color * (1 / v.rhw);
-                _frameBuffer.SetPixel(xindex, yindex, vertexColor);
-            }
+                if (v.rhw >=_zBuffer[xindex,yindex])
+                {
+                    _zBuffer[xindex, yindex] = v.rhw;
 
+                    //顶点颜色
+                    Color4 vertexColor = v.color * (1 / v.rhw);
+                    _frameBuffer.SetPixel(xindex, yindex, vertexColor);
+                }
+
+
+            }
         }
 
         //===================================================================
@@ -248,7 +283,6 @@ namespace SREDemo
             result[2] = bottom;
 
             return result;
-
         }
 
         /// <summary>
@@ -270,106 +304,56 @@ namespace SREDemo
             }
             else
             {
-                int dx = Math.Abs(x1 - x2);
-                int dy = Math.Abs(y1 - y2);
-                int tempX, tempY;
+                int x = 0, y = 0, offset = 0;
+                int dx = (x1 < x2) ? x2 - x1 : x1 - x2;
+                int dy = (y1 < y2) ? y2 - y1 : y1 - y2;
 
-                if (dx == dy)
+                if (dx >= dy)
                 {
-                    //保证x1 < x2
-                    if (x1 > x2)
+                    if (x2 < x1)
                     {
-                        tempX = x1;
-                        x1 = x2;
-                        x2 = tempX;
-
-                        tempY = y1;
-                        y1 = y2;
-                        y2 = tempY;
+                        x = x1; y = y1;
+                        x1 = x2; y1 = y2;
+                        x2 = x; y2 = y;
                     }
-
-                    for (int x = x1,y =y1; x < x2; x++)
-                    {
-                        y += (y2 >= y1) ? 1 : -1;
-                        _frameBuffer.SetPixel(x, y, Color.Red);
-                    }
-                }
-                else if (dx < dy)
-                {//y的增长速度大于x
-
-                    //保证x1 < x2
-                    if (x1 > x2)
-                    {
-                        tempX = x1;
-                        x1 = x2;
-                        x2 = tempX;
-
-                        tempY = y1;
-                        y1 = y2;
-                        y2 = tempY;
-                    }
-
-                    //dx每移动多少，增加一个y
-                    int delta = (dx % dy) == 0 ? 0 : dy / (dx % dy);
-                    //整数比关系
-                    int offset = dy / dx;
-
-                    int count = 0;//计数器
-                    for (int x = x1, y = y1; x < x2; x++)
+                    for (x = x1, y = y1; x <= x2; x++)
                     {
                         _frameBuffer.SetPixel(x, y, Color.Red);
-                        for (int i = 0; i < offset; i++)
+                        offset += dy;
+                        if (offset >= dx)
                         {
-                            y += (y2 >= y1) ? 1 : -1;
-                            _frameBuffer.SetPixel(x, y, Color.Red);
-                        }
-                        count++;
-                        if (count >= delta)
-                        {
-                            count = 0;
+                            offset -= dx;
                             y += (y2 >= y1) ? 1 : -1;
                             _frameBuffer.SetPixel(x, y, Color.Red);
                         }
                     }
+
+                    _frameBuffer.SetPixel(x2, y2, Color.Red);
                 }
                 else
-                {//x的增长速度小于y
+                {
 
-                    //保证x1 < x2
-                    if (y1 > y2)
+                    if (y2 < y1)
                     {
-                        tempX = x1;
-                        x1 = x2;
-                        x2 = tempX;
-
-                        tempY = y1;
-                        y1 = y2;
-                        y2 = tempY;
+                        x = x1; y = y1;
+                        x1 = x2; y1 = y2;
+                        x2 = x; y2 = y;
                     }
-
-                    //dx每移动多少，增加一个y
-                    int delta = (dx % dy) == 0 ? 0 : dy / (dx % dy);
-                    //整数比关系
-                    int offset = dx / dy;
-
-                    int count = 0;//计数器
-                    for (int y = y1, x = x1; y < y2; y++)
+                    for (x = x1, y = y1; y <= y2; y++)
                     {
                         _frameBuffer.SetPixel(x, y, Color.Red);
-                        for (int i = 0; i < offset; i++)
+                        offset += dx;
+                        if (offset >= dy)
                         {
-                            x += (x2 >= x1) ? 1 : -1;
-                            _frameBuffer.SetPixel(x, y, Color.Red);
-                        }
-                        count++;
-                        if (count >= delta)
-                        {
-                            count = 0;
+                            offset -= dy;
                             x += (x2 >= x1) ? 1 : -1;
                             _frameBuffer.SetPixel(x, y, Color.Red);
                         }
                     }
+
+                    _frameBuffer.SetPixel(x2, y2, Color.Red);
                 }
+
             }
         }
     }
