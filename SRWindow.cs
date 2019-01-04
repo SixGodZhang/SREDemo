@@ -54,7 +54,7 @@ namespace SREDemo
         //根据键盘的输入调整摄像机等,确定各个变换矩阵
         public void ProcessInput()
         {
-            Matrix4 scale = Matrix4.ScaleMatrix(1, 1, 1);
+            Matrix4 scale = Matrix4.ScaleMatrix(2, 2, 2);
             Matrix4 rotation = Matrix4.RotateMatrix(new Vector3(0, 1, 0, 0), 0f);
             Matrix4 translate = Matrix4.TranslateMatrix(0, 0, 10);
 
@@ -95,10 +95,16 @@ namespace SREDemo
             //RenderCore.DrawTriangle(p4, p5, p6);
 
             //任意三角形
-            Vertex p7 = new Vertex(new Vector3(0, 1, 1));
-            Vertex p8 = new Vertex(new Vector3(1, 0.5f, 1));
-            Vertex p9 = new Vertex(new Vector3(-1, -1, 1));
-            RenderCore.DrawTriangle(p7, p8, p9);
+            //Vertex p7 = new Vertex(new Vector3(0, 1, 1));
+            //Vertex p8 = new Vertex(new Vector3(1, 0.5f, 1));
+            //Vertex p9 = new Vertex(new Vector3(-1, -1, 1));
+            //RenderCore.DrawTriangle(p7, p8, p9);
+
+            //颜色插值
+            Vertex p10 = new Vertex(new Vector3(0, 1, 1), Color.Red);
+            Vertex p11 = new Vertex(new Vector3(1, -1, 1), Color.Green);
+            Vertex p12 = new Vertex(new Vector3(-1, -1, 1), Color.Blue);
+            RenderCore.DrawTriangle(p10, p11, p12);
         }
 
         /// <summary>

@@ -38,13 +38,13 @@ namespace SREDemo
         }
 
         //test
-        public Vertex(Vector3 v)
+        public Vertex(Vector3 v,Color color = default(Color))
         {
             this.position = v;
             this.normal = new Vector3(0, 0, 0, 0);
             this.u = 0;
             this.v = 0;
-            this.color = new Color4(Color.Red);
+            this.color = new Color4(color == default(Color)?Color.Red:color);
             this.rhw = 1;
         }
 
