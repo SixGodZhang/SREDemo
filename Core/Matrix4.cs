@@ -7,6 +7,7 @@ namespace SREDemo
     /// </summary>
     public class Matrix4
     {
+        #region 字段、属性、索引
         public float[,] matrix = new float[4,4];
 
         public float this[int i, int j]
@@ -14,6 +15,7 @@ namespace SREDemo
             get { return matrix[i, j]; }
             set { matrix[i, j] = value; }
         }
+        #endregion
 
         #region 构造函数
 

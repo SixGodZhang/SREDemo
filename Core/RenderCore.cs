@@ -3,8 +3,12 @@ using System.Drawing;
 
 namespace SREDemo
 {
+    /// <summary>
+    /// 渲染核心
+    /// </summary>
     public class RenderCore
     {
+        #region 字段&属性
         private static Bitmap _frameBuffer;
         public static Bitmap FrameBuffer
         {
@@ -25,7 +29,9 @@ namespace SREDemo
             get { return _zBuffer; }
             set { _zBuffer = value; }
         }
+        #endregion
 
+        #region 方法
         public static void DrawTriangle(Vertex p1, Vertex p2, Vertex p3)
         {
             //1.局部=>世界
@@ -354,5 +360,6 @@ namespace SREDemo
 
             }
         }
+        #endregion
     }
 }
