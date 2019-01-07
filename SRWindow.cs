@@ -27,7 +27,6 @@ namespace SREDemo
             zBuffer = new float[this.Width, this.Height];
             RenderCore.ZBuffer = zBuffer;
 
-
             //创建摄像机, 摄像机位置默认为(0,0,0),朝向z轴方向(0,0,1),以(0,1,0)为单位up向量,y方向的视角为90度,zn = 1, zf = 500
             float aspect = (float)this.Width / (float)this.Height;
             camera = new Camera(new Vector3(0, 0, 0, 1), new Vector3(0, 0, 1, 0), new Vector3(0, 1, 0, 0),

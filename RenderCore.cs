@@ -201,8 +201,6 @@ namespace SREDemo
                     Color4 vertexColor = v.color * (1 / v.rhw);
                     _frameBuffer.SetPixel(xindex, yindex, vertexColor);
                 }
-
-
             }
         }
 
